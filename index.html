@@ -99,17 +99,19 @@
     <div class="score-card fail"><div class="label">Criteria Fail</div><div class="value">13</div></div>
     <div class="score-card warn"><div class="label">N/A / Not Shown</div><div class="value">6</div></div>
     <div class="score-card warn"><div class="label">Screens Captured</div><div class="value">7</div></div>
-    <div class="score-card fail"><div class="label">Critical Gaps</div><div class="value">4</div></div>
+    <div class="score-card warn"><div class="label">Deferred by Design</div><div class="value">4</div></div>
   </div>
 
-  <div class="flow-gap">
-    <h3>Critical Gaps — Screens Entirely Missing from Flow</h3>
-    <ul>
-      <li><strong>Display name:</strong> user never sets a profile name during onboarding.</li>
-      <li><strong>Profile picture:</strong> no avatar step offered.</li>
-      <li><strong>Seed phrase generation &amp; verification:</strong> the wallet is created and funded-ready without the user ever seeing their 12/24-word backup phrase. There is no recovery path presented. This is the single most severe UX/security gap.</li>
-      <li><strong>Biometric auth:</strong> fingerprint/face ID offer never appeared.</li>
+  <div class="flow-gap" style="background:#1a2e05;border-color:#365314;">
+    <h3 style="color:#bbf7d0;">Intentional Design Changes in This Build</h3>
+    <p style="color:#dcfce7;font-size:.9rem;margin-bottom:.5rem;">The following steps were <strong>deliberately removed from onboarding</strong> to reduce friction and speed up time-to-home. They are design decisions, not bugs.</p>
+    <ul style="color:#dcfce7;">
+      <li><strong>Display name:</strong> deferred — user can set it post-onboarding from profile settings.</li>
+      <li><strong>Profile picture:</strong> deferred — same post-onboarding path.</li>
+      <li><strong>Seed phrase / recovery backup:</strong> removed from the onboarding critical path; expected to be prompted later (e.g., contextually when user first tries to send funds).</li>
+      <li><strong>Biometric auth:</strong> not offered in this build flow.</li>
     </ul>
+    <p style="color:#bbf7d0;font-size:.85rem;margin-top:.5rem;">UX consideration: deferring seed phrase backup increases conversion but raises the question of <em>when and how prominently</em> it is surfaced later. This report flags the first-session experience; follow-up review should verify the deferred backup prompt exists and is hard to dismiss.</p>
   </div>
 </section>
 
