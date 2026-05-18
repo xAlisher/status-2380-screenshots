@@ -3,322 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Status Android Onboarding UX Review — 2.38.0-rc.1-61</title>
+<title>Status 2.38.0-rc.1 — UX Review Reports</title>
 <style>
   :root {
-    --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b;
     --bg: #0f172a; --surface: #1e293b; --border: #334155;
     --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1;
+    --pass: #22c55e; --warn: #f59e0b;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
-  a { color: var(--accent); }
+  body { background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
   header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 2rem; }
-  header h1 { font-size: 1.6rem; margin-bottom: .4rem; }
-  header .meta { color: var(--muted); font-size: .9rem; display: flex; gap: 2rem; flex-wrap: wrap; }
+  header h1 { font-size: 1.8rem; margin-bottom: .4rem; }
+  header p { color: var(--muted); font-size: .95rem; }
+  .badge { display: inline-block; padding: .15rem .55rem; border-radius: 4px; font-size: .78rem; font-weight: 600; margin-left: .4rem; }
+  .badge.android { background: #14532d; color: #86efac; }
+  .badge.done { background: #1e3a5f; color: #93c5fd; }
 
-  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: .6rem 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .85rem; }
-  nav a { text-decoration: none; color: var(--muted); } nav a:hover { color: var(--text); }
+  main { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
 
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  h2 { font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1.2rem; }
 
-  /* Scorecard */
-  #scorecard { margin-bottom: 3rem; }
-  #scorecard h2 { font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
-  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
-  .score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; }
-  .score-card .label { font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
-  .score-card .value { font-size: 1.5rem; font-weight: 700; }
-  .score-card.pass .value { color: var(--pass); }
-  .score-card.fail .value { color: var(--fail); }
-  .score-card.warn .value { color: var(--warn); }
+  .reports { display: grid; gap: 1rem; }
 
-  .flow-gap { background: #450a0a; border: 1px solid #7f1d1d; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
-  .flow-gap h3 { color: #fca5a5; font-size: 1rem; margin-bottom: .5rem; }
-  .flow-gap ul { color: #fecaca; padding-left: 1.2rem; font-size: .9rem; }
-  .flow-gap li { margin-bottom: .3rem; }
+  .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.6rem; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; transition: border-color .15s; }
+  .report-card:hover { border-color: var(--accent); }
+  .report-card h3 { font-size: 1.05rem; margin-bottom: .3rem; }
+  .report-card h3 a { color: var(--text); }
+  .report-card h3 a:hover { color: var(--accent); text-decoration: none; }
+  .report-card .desc { color: var(--muted); font-size: .875rem; }
+  .report-card .meta { font-size: .8rem; color: var(--muted); margin-top: .5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .report-card .score { text-align: right; }
+  .report-card .score .pass { font-size: 1.4rem; font-weight: 700; color: var(--pass); }
+  .report-card .score .fail { font-size: 1.4rem; font-weight: 700; color: #ef4444; }
+  .report-card .score .label { font-size: .75rem; color: var(--muted); }
 
-  /* Screen sections */
-  .screen { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; margin-bottom: 3rem; align-items: start; }
-  @media (max-width: 680px) { .screen { grid-template-columns: 1fr; } }
-  .screen img { width: 200px; border-radius: 12px; border: 1px solid var(--border); display: block; }
-  .screen-info h2 { font-size: 1.1rem; margin-bottom: .75rem; }
-  table { width: 100%; border-collapse: collapse; font-size: .875rem; }
-  th, td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: left; vertical-align: top; }
-  th { background: var(--surface); color: var(--muted); width: 130px; font-weight: 600; }
-  td { background: #0f1a2e; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
 
-  .tag { display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .78rem; font-weight: 600; margin-right: .3rem; margin-bottom: .2rem; }
-  .tag.pass { background: #14532d; color: var(--pass); }
-  .tag.fail { background: #450a0a; color: #fca5a5; }
-  .tag.warn { background: #451a03; color: #fbbf24; }
+  .info-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; color: var(--muted); font-size: .875rem; margin-top: 2rem; }
+  .info-box strong { color: var(--text); }
 
-  /* Criteria */
-  #criteria { margin-top: 2rem; }
-  #criteria h2 { font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
-  .criteria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .5rem; }
-  .criterion { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: .6rem .9rem; font-size: .85rem; display: flex; align-items: flex-start; gap: .5rem; }
-  .criterion .icon { flex-shrink: 0; margin-top: .1rem; }
-
-  h2.section { font-size: 1.2rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
-  .skipped-note { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: var(--muted); font-size: .9rem; }
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); margin-top: 3rem; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Status Android Onboarding UX Review</h1>
-  <div class="meta">
-    <span>Build: <strong>2.38.0-rc.1-61-g61e695896</strong></span>
-    <span>Device: <strong>Samsung RF8RA0M127K (arm64)</strong></span>
-    <span>Date: <strong>2026-05-18</strong></span>
-    <span>Flow: <strong>New profile, no Keycard</strong></span>
-  </div>
+  <h1>Status UX Review Reports <span class="badge android">Android</span> <span class="badge done">2.38.0-rc.1</span></h1>
+  <p>Manual UX review session · Build 2.38.0-rc.1-61-g61e695896 · Samsung arm64 · 2026-05-18</p>
 </header>
 
-<nav>
-  <a href="#scorecard">Scorecard</a>
-  <a href="#screen-01">01 Welcome</a>
-  <a href="#screen-02">02 Start Fresh</a>
-  <a href="#screen-03">03 Password</a>
-  <a href="#screen-04">04 Notifications</a>
-  <a href="#screen-05">05 Tutorial Tip</a>
-  <a href="#screen-06">06 Home</a>
-  <a href="#criteria">28 Criteria</a>
-</nav>
-
 <main>
+  <h2>Reports</h2>
+  <div class="reports">
 
-<!-- SCORECARD -->
-<section id="scorecard">
-  <h2>Summary Scorecard</h2>
+    <div class="report-card">
+      <div>
+        <h3><a href="onboarding.html">Onboarding Flow — New Profile</a></h3>
+        <div class="desc">Welcome screen through home. Fresh install, no Keycard. Covers password creation, notifications prompt, tutorial tip, and home landing state.</div>
+        <div class="meta">
+          <span>6 screens captured</span>
+          <span>28 criteria evaluated</span>
+          <span>4 intentionally deferred steps noted</span>
+        </div>
+      </div>
+      <div class="score">
+        <div class="pass">9</div><div class="label">pass</div>
+        <div style="margin-top:.25rem;"><span class="fail">13</span></div><div class="label">fail</div>
+      </div>
+    </div>
 
-  <div class="score-grid">
-    <div class="score-card pass"><div class="label">Criteria Pass</div><div class="value">9</div></div>
-    <div class="score-card fail"><div class="label">Criteria Fail</div><div class="value">13</div></div>
-    <div class="score-card warn"><div class="label">N/A / Not Shown</div><div class="value">6</div></div>
-    <div class="score-card warn"><div class="label">Screens Captured</div><div class="value">7</div></div>
-    <div class="score-card warn"><div class="label">Deferred by Design</div><div class="value">4</div></div>
+    <div class="report-card">
+      <div>
+        <h3><a href="backup.html">Recovery Phrase Backup</a></h3>
+        <div class="desc">Post-onboarding backup flow triggered from the home banner. Covers phrase reveal, word verification, keep-or-delete choice, and success state.</div>
+        <div class="meta">
+          <span>6 screens captured</span>
+          <span>Flow completed successfully</span>
+          <span>1 persistent banner bug found</span>
+        </div>
+      </div>
+      <div class="score">
+        <div class="pass">8</div><div class="label">pass</div>
+        <div style="margin-top:.25rem;"><span class="fail">3</span></div><div class="label">fail</div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="flow-gap" style="background:#1a2e05;border-color:#365314;">
-    <h3 style="color:#bbf7d0;">Intentional Design Changes in This Build</h3>
-    <p style="color:#dcfce7;font-size:.9rem;margin-bottom:.5rem;">The following steps were <strong>deliberately removed from onboarding</strong> to reduce friction and speed up time-to-home. They are design decisions, not bugs.</p>
-    <ul style="color:#dcfce7;">
-      <li><strong>Display name:</strong> deferred — user can set it post-onboarding from profile settings.</li>
-      <li><strong>Profile picture:</strong> deferred — same post-onboarding path.</li>
-      <li><strong>Seed phrase / recovery backup:</strong> removed from the onboarding critical path; expected to be prompted later (e.g., contextually when user first tries to send funds).</li>
-      <li><strong>Biometric auth:</strong> not offered in this build flow.</li>
-    </ul>
-    <p style="color:#bbf7d0;font-size:.85rem;margin-top:.5rem;">UX consideration: deferring seed phrase backup increases conversion but raises the question of <em>when and how prominently</em> it is surfaced later. This report flags the first-session experience; follow-up review should verify the deferred backup prompt exists and is hard to dismiss.</p>
+  <hr class="divider">
+
+  <div class="info-box">
+    <strong>Key finding across both flows:</strong> The red "Secure your recovery phrase" banner persists through all 6 screens of the backup flow — it only clears on the final Done tap. This is the most visible bug in this session and affects perceived quality of the backup UX.
+    <br><br>
+    <strong>Screenshots:</strong> <a href="https://github.com/xAlisher/status-2380-screenshots">github.com/xAlisher/status-2380-screenshots</a>
+    &nbsp;·&nbsp;
+    <strong>Tools:</strong> <a href="https://github.com/xAlisher/android-skills">android-skills recipes</a>
   </div>
-</section>
-
-<!-- SCREEN 01 -->
-<h2 class="section" id="screen-01">01 — Welcome</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/01-welcome.png" alt="Welcome screen">
-  <div class="screen-info">
-    <table>
-      <tr><th>Title</th><td>Welcome to Status</td></tr>
-      <tr><th>Subtitle</th><td>"The open-source, decentralised wallet and messenger"</td></tr>
-      <tr><th>Primary action</th><td>Tap <em>Create profile</em></td></tr>
-      <tr><th>Secondary</th><td>Log in (existing profile)</td></tr>
-      <tr><th>Other elements</th><td>Auto-playing carousel (3 slides), language selector (EN), "Third-party services enabled" link, ToS / Privacy Policy links</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag pass">✓</span> One clear primary CTA, visually differentiated from secondary<br>
-        <span class="tag pass">✓</span> Plain language, no crypto jargon on entry screen<br>
-        <span class="tag warn">⚠</span> "Third-party services <u>enabled</u>" is 9px grey text — easy to miss; users unaware of data sharing default<br>
-        <span class="tag warn">⚠</span> Carousel auto-plays with no pause — WCAG 2.1 SC 2.2.2 violation for users with vestibular disorders<br>
-        <span class="tag fail">✗</span> No progress indicator (acceptable at entry, but no onboarding map shown anywhere in subsequent screens either)
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Surface "Third-party services" choice prominently (toggle or highlighted link).<br>
-        Add <code>autoPlay: false</code> default or a pause button to the carousel.<br>
-        Show a 4-dot step indicator starting on the next screen so users know how long onboarding is.
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- SCREEN 02 -->
-<h2 class="section" id="screen-02">02 — Start Fresh</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/02-start-fresh.png" alt="Create profile screen">
-  <div class="screen-info">
-    <table>
-      <tr><th>Title</th><td>Create profile — "How would you like to start using Status?"</td></tr>
-      <tr><th>Primary action</th><td>Tap <em>Let's go!</em> (Start fresh)</td></tr>
-      <tr><th>Secondary</th><td>Use a recovery phrase · Use an empty Keycard</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag pass">✓</span> Clear visual hierarchy: new-user path prominent, import paths de-emphasised<br>
-        <span class="tag pass">✓</span> Illustrative icon reinforces "fresh start" concept<br>
-        <span class="tag fail">✗</span> No step indicator (still no X of Y)<br>
-        <span class="tag warn">⚠</span> "Use an empty Keycard" shown to all users — niche hardware wallet flow adds cognitive noise for new users who don't own a Keycard<br>
-        <span class="tag fail">✗</span> No rationale for why there are three paths; new users may be confused by the choice
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Move Keycard option behind an "Advanced" disclosure.<br>
-        Add inline tooltip: "Already have a Status account? Import your recovery phrase."<br>
-        Add step indicator (e.g., Step 1 of 3).
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- SCREEN 03 -->
-<h2 class="section" id="screen-03">03 — Create Password</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/03b-password-matched.png" alt="Password screen with matching passwords">
-  <div class="screen-info">
-    <table>
-      <tr><th>Title</th><td>Create profile password — "This password can't be recovered"</td></tr>
-      <tr><th>Fields</th><td>Choose password (min 10 chars) · Repeat password</td></tr>
-      <tr><th>Strength meter</th><td>Inline bar + checklist (Lower case / Upper case / Numbers / Symbols). States observed: Very weak → Okay → Good → Very strong</td></tr>
-      <tr><th>Primary action</th><td><em>Confirm password</em> (enabled only when both fields match)</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag pass">✓</span> Inline requirements visible without submit attempt<br>
-        <span class="tag pass">✓</span> "Passwords match" confirmation shown in real time<br>
-        <span class="tag pass">✓</span> Reveal-password toggle on both fields<br>
-        <span class="tag fail">✗</span> "This password can't be recovered" — alarming framing with no constructive guidance (no mention of seed phrase as the real recovery path)<br>
-        <span class="tag fail">✗</span> No step indicator<br>
-        <span class="tag warn">⚠</span> On-screen keyboard language (Polski) doesn't match app UI language (EN) — keyboard locale follows OS, not app locale; characters may be remapped unexpectedly<br>
-        <span class="tag warn">⚠</span> Confirm button enables at "Good" strength (all classes met but no symbols) — no minimum strength gate beyond character class requirements<br>
-        <span class="tag fail">✗</span> adb <code>input text</code> injects text at the Android IME layer but Qt QML fields accumulate injected text without honouring CTRL+A / DEL for field clearing — indicates Qt–Android input bridge inconsistency (testability bug)
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Replace warning with constructive framing: "Your seed phrase is your only backup — you'll set it up next."<br>
-        Require minimum "Good" strength before enabling Confirm.<br>
-        Fix keyboard locale mismatch: sync IME language to app's active locale.
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<div class="skipped-note">
-  <strong>Screens not shown in this build's flow:</strong> Display name, Profile picture, Seed phrase intro, Seed phrase display, Seed phrase verification, Biometric authentication. These were expected per the plan but did not appear in build 2.38.0-rc.1-61. Whether they exist behind a later prompt (e.g., after first login) is not verified in this session.
-</div>
-
-<!-- SCREEN 04 -->
-<h2 class="section" id="screen-04">04 — Enable Push Notifications</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/04-home-notifications.png" alt="Notifications permission modal">
-  <div class="screen-info">
-    <table>
-      <tr><th>Context</th><td>Bottom sheet modal over wallet home, appears immediately after password confirmation</td></tr>
-      <tr><th>Primary action</th><td>Continue (→ OS permission dialog, not observed)</td></tr>
-      <tr><th>Secondary</th><td>Maybe later</td></tr>
-      <tr><th>Body copy</th><td>"Notifications include alerts, sounds, and icon badges… Status uses a device-local service to deliver notifications, ensuring they remain private and do not pass through any third-party or centralized servers."</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag pass">✓</span> Privacy rationale provided before requesting permission — best practice<br>
-        <span class="tag pass">✓</span> "Maybe later" option respects user autonomy<br>
-        <span class="tag fail">✗</span> "Internet connection lost. Reconnect to ensure everythi…" error banner persists across all subsequent screens — alarming first impression for brand-new user; no retry button visible in truncated banner<br>
-        <span class="tag fail">✗</span> OS-level push permission dialog never appeared after tapping Continue — possible that the OS permission was already granted from the previously-installed nightly, or a bug prevents the dialog from showing on fresh install<br>
-        <span class="tag fail">✗</span> Timing: modal appears before user has set display name or seen any content — the app has no identity context for "why notifications?" yet
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Move notification request to after first meaningful action (e.g., first message received or first chat joined).<br>
-        Show full error banner text; add a "Retry" button.<br>
-        Verify OS permission dialog is triggered correctly on clean installs.
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- SCREEN 05 -->
-<h2 class="section" id="screen-05">05 — Tutorial Tip ("To open app menu")</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/05-tutorial-tip.png" alt="Tutorial tip modal">
-  <div class="screen-info">
-    <table>
-      <tr><th>Title</th><td>To open app menu</td></tr>
-      <tr><th>Content</th><td>Animated arrow gesture illustration showing swipe-from-left for sidebar navigation</td></tr>
-      <tr><th>Primary action</th><td>Continue</td></tr>
-      <tr><th>Secondary</th><td>Maybe later (bottom-left)</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag pass">✓</span> Single-gesture tutorial is focused and quick<br>
-        <span class="tag warn">⚠</span> Placed immediately after notifications modal — two consecutive modals increase dismissal fatigue<br>
-        <span class="tag fail">✗</span> No indication of how many tutorial tips remain (is this 1 of 1 or 1 of 5?)<br>
-        <span class="tag fail">✗</span> Gesture illustration is small and the arrow animation speed may be too fast to register for new users<br>
-        <span class="tag warn">⚠</span> The sidebar it describes contains Communities, DMs, Settings, Profile, Notifications — but none of these are contextualised for the user yet
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Combine with an interactive highlight overlay rather than a modal.<br>
-        Show this tip contextually on first time the user tries to navigate, not as a standalone modal.<br>
-        If multiple tips exist, add a dot indicator.
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- SCREEN 06 -->
-<h2 class="section" id="screen-06">06 — Home (All Accounts / Wallet)</h2>
-<div class="screen">
-  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/onboarding/06-home.png" alt="Home wallet screen">
-  <div class="screen-info">
-    <table>
-      <tr><th>Title</th><td>All accounts</td></tr>
-      <tr><th>Content</th><td>Multi-chain portfolio view (ETH, MATIC, AVAX, OP). Tabs: Assets · Collectibles · History. CTAs: Ways to buy · Receive. Bottom nav: Messages · Wallet · Activity.</td></tr>
-      <tr><th>Landing context</th><td>First screen a new user sees after onboarding — no profile name, no seed phrase backup, no contacts</td></tr>
-      <tr><th>Findings</th><td>
-        <span class="tag fail">✗</span> "Internet connection lost" error persists — network error on first home view is a poor first impression<br>
-        <span class="tag fail">✗</span> User has no display name or avatar set — the "DP" placeholder in the top-right suggests an auto-generated identity, but this is not explained<br>
-        <span class="tag fail">✗</span> No post-onboarding prompt to back up seed phrase — wallet is active but unprotected<br>
-        <span class="tag warn">⚠</span> Wallet is the default landing tab, not Messages — positioning Status as "wallet first, messenger second" may conflict with user mental model if they signed up for private messaging<br>
-        <span class="tag pass">✓</span> "Ways to buy" and "Receive" are immediately actionable for users ready to fund<br>
-        <span class="tag pass">✓</span> Multi-chain support visible upfront
-      </td></tr>
-      <tr><th>Suggestions</th><td>
-        Display a "Finish setup" banner (backup seed phrase, set display name) until dismissed.<br>
-        Show a welcome empty-state message: "You're in! Add a friend or back up your wallet to get started."<br>
-        Consider defaulting landing to Messages tab for new users (matches product positioning as a messenger).
-      </td></tr>
-    </table>
-  </div>
-</div>
-
-<!-- CRITERIA -->
-<section id="criteria">
-  <h2>28 UX Criteria Applied</h2>
-  <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem;">Sources: Nielsen Norman Group, UX Design Institute, Chameleon, crypto wallet UX research (Ethereum Foundation, Consensys). Each criterion evaluated across the observed onboarding flow.</p>
-  <div class="criteria-grid">
-    <div class="criterion"><span class="icon">✅</span> Progress indicator explicit (step X of Y) — <em>Fail: never shown</em></div>
-    <div class="criterion"><span class="icon">✅</span> One primary action per screen — <em>Pass on most screens</em></div>
-    <div class="criterion"><span class="icon">✅</span> Plain language, no jargon on entry — <em>Pass on Welcome; minor fail on Keycard label</em></div>
-    <div class="criterion"><span class="icon">✅</span> Error messages explain recovery — <em>Fail: "can't be recovered" has no recovery guidance</em></div>
-    <div class="criterion"><span class="icon">✅</span> Sensitive screens block screenshots — <em>N/A: seed phrase screen not shown</em></div>
-    <div class="criterion"><span class="icon">✅</span> Seed phrase verification before proceeding — <em>Fail: seed phrase never shown</em></div>
-    <div class="criterion"><span class="icon">✅</span> Biometric auth offered as default — <em>Fail: never offered</em></div>
-    <div class="criterion"><span class="icon">✅</span> Touch targets ≥ 44×44 dp — <em>Pass: all major buttons measured ≥ 44dp</em></div>
-    <div class="criterion"><span class="icon">✅</span> Each data request includes rationale — <em>Pass: notifications modal explains why</em></div>
-    <div class="criterion"><span class="icon">✅</span> Keyboard language matches app locale — <em>Fail: Polski keyboard shown in EN app</em></div>
-    <div class="criterion"><span class="icon">✅</span> Display name collected before home — <em>Fail: skipped entirely</em></div>
-    <div class="criterion"><span class="icon">✅</span> Avatar / profile pic offered — <em>Fail: skipped entirely</em></div>
-    <div class="criterion"><span class="icon">✅</span> Real-time inline validation on inputs — <em>Pass: password strength shown live</em></div>
-    <div class="criterion"><span class="icon">✅</span> Back navigation available on all steps — <em>Pass: back arrow present</em></div>
-    <div class="criterion"><span class="icon">✅</span> Permission requests deferred until context is clear — <em>Fail: notifications shown before any context</em></div>
-    <div class="criterion"><span class="icon">✅</span> Post-onboarding "finish setup" prompt — <em>Fail: no such prompt at home</em></div>
-    <div class="criterion"><span class="icon">✅</span> Default landing matches product value prop — <em>Warn: wallet default may not match messenger positioning</em></div>
-    <div class="criterion"><span class="icon">✅</span> Animations respect reduced-motion preference — <em>N/A: not tested</em></div>
-    <div class="criterion"><span class="icon">✅</span> Contrast ratio ≥ 4.5:1 for body text — <em>Warn: "Third-party services enabled" grey text not tested</em></div>
-    <div class="criterion"><span class="icon">✅</span> Auto-playing media has pause/stop control — <em>Fail: welcome carousel has no pause</em></div>
-    <div class="criterion"><span class="icon">✅</span> Dismissible modals don't stack without indicator — <em>Fail: two sequential modals with no progress</em></div>
-    <div class="criterion"><span class="icon">✅</span> New user sees empty state with guidance — <em>Fail: home shows no empty-state onboarding prompt</em></div>
-    <div class="criterion"><span class="icon">✅</span> Password strength gate enforced — <em>Warn: Good strength sufficient; symbols not required</em></div>
-    <div class="criterion"><span class="icon">✅</span> Reveal password toggle present — <em>Pass: both fields have toggle</em></div>
-    <div class="criterion"><span class="icon">✅</span> Network errors don't block onboarding — <em>Pass: user can proceed; Warn: error shown but not explained</em></div>
-    <div class="criterion"><span class="icon">✅</span> Privacy default is most protective — <em>Fail: third-party services enabled by default</em></div>
-    <div class="criterion"><span class="icon">✅</span> Onboarding completable offline — <em>Pass: flow completed without network</em></div>
-    <div class="criterion"><span class="icon">✅</span> Wallet key backup prompted within first session — <em>Fail: never prompted</em></div>
-  </div>
-</section>
-
-<footer style="margin-top:3rem;padding:1.5rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;text-align:center;">
-  Status Android Onboarding UX Review · Build 2.38.0-rc.1-61 · 2026-05-18 ·
-  <a href="https://github.com/xAlisher/status-2380-screenshots">screenshots repo</a>
-</footer>
-
 </main>
+
+<footer>Status 2.38.0-rc.1 UX Review · 2026-05-18</footer>
 </body>
 </html>
