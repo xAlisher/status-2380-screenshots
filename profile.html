@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Testing — Status 2.38.0-rc.1</title>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1;
+    --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
+  a { color: var(--accent); }
+  a:hover { text-decoration: underline; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 2rem; }
+  header h1 { font-size: 1.6rem; margin-bottom: .3rem; }
+  header p { color: var(--muted); font-size: .9rem; }
+  .back { font-size: .85rem; color: var(--muted); margin-bottom: .6rem; display: block; }
+
+  main { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; }
+
+  section { margin-bottom: 3rem; }
+  h2 { font-size: 1.15rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; margin-bottom: 1.4rem; }
+  h3 { font-size: .95rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8rem; }
+
+  .screen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .screen-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .screen-card img { width: 100%; display: block; }
+  .screen-card .cap { padding: .5rem .75rem; font-size: .78rem; color: var(--muted); }
+
+  .findings { display: grid; gap: .7rem; }
+  .finding { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; display: grid; grid-template-columns: auto 1fr; gap: .7rem; align-items: start; }
+  .finding .icon { font-size: 1.1rem; }
+  .finding .body { }
+  .finding .title { font-weight: 600; font-size: .9rem; margin-bottom: .2rem; }
+  .finding .detail { font-size: .83rem; color: var(--muted); }
+  .finding.bug { border-left: 3px solid var(--fail); }
+  .finding.security { border-left: 3px solid #a855f7; }
+  .finding.pass { border-left: 3px solid var(--pass); }
+  .finding.ux { border-left: 3px solid var(--warn); }
+
+  .checklist { list-style: none; display: grid; gap: .4rem; }
+  .checklist li { font-size: .875rem; display: flex; gap: .5rem; align-items: center; }
+  .checklist li::before { content: '✓'; color: var(--pass); font-weight: 700; }
+  .checklist li.skip::before { content: '—'; color: var(--muted); }
+
+  .scorecard { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .score-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1.2rem; text-align: center; min-width: 80px; }
+  .score-item .num { font-size: 1.8rem; font-weight: 700; }
+  .score-item .lbl { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+  .num.pass { color: var(--pass); }
+  .num.fail { color: var(--fail); }
+  .num.sec { color: #a855f7; }
+
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="index.html">← Back to all reports</a>
+  <h1>Profile Testing — Build 2.38.0-rc.1</h1>
+  <p>Manual UX review · Android · Device RF8RA0M127K (Samsung 1080×2400) · 2026-05-18</p>
+</header>
+
+<main>
+
+  <div class="scorecard">
+    <div class="score-item"><div class="num pass">15</div><div class="lbl">screens / states</div></div>
+    <div class="score-item"><div class="num fail">5</div><div class="lbl">bugs filed</div></div>
+    <div class="score-item"><div class="num sec">1</div><div class="lbl">security</div></div>
+    <div class="score-item"><div class="num pass">3</div><div class="lbl">flows OK</div></div>
+  </div>
+
+  <!-- PROFILE VIEW -->
+  <section>
+    <h2>1 · Profile View (own)</h2>
+    <div class="screen-grid">
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-view-communities-tab.png" alt="Profile view communities tab">
+        <div class="cap">Communities tab — default state</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-preview-dropdown.png" alt="Preview dropdown">
+        <div class="cap">Preview as Stranger/Contact/Trusted dropdown</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-preview-as-contact.png" alt="Preview as Contact">
+        <div class="cap">Preview as Contact</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-preview-trusted-contact.png" alt="Preview as Trusted contact">
+        <div class="cap">Preview as Trusted contact</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-share-modal.png" alt="Share profile modal">
+        <div class="cap">Share Profile — QR + link + emoji hash</div>
+      </div>
+    </div>
+    <ul class="checklist">
+      <li>Default state (Communities tab) renders correctly</li>
+      <li>Accounts, Collectibles, Web tabs all accessible</li>
+      <li>Preview as Stranger / Contact / Trusted contact — all 3 work, icon updates correctly</li>
+      <li>Share Profile — QR code, profile link, emoji hash all present</li>
+      <li>Profile picture displayed correctly</li>
+    </ul>
+  </section>
+
+  <!-- EDIT PROFILE -->
+  <section>
+    <h2>2 · Edit Profile</h2>
+    <div class="screen-grid">
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/edit-profile-identity-tab.png" alt="Edit Profile identity tab">
+        <div class="cap">Identity tab — display name + bio</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-bio-overlimit.png" alt="Bio over limit">
+        <div class="cap">Bio over 240 chars — soft error only</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/edit-profile-communities-tab.png" alt="Communities showcase">
+        <div class="cap">Communities showcase tab</div>
+      </div>
+      <div class="screen-card">
+        <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-showcase-toggle-unresponsive.png" alt="Showcase toggle">
+        <div class="cap">Showcase visibility toggle</div>
+      </div>
+    </div>
+    <ul class="checklist">
+      <li>Display name 20-char hard limit enforced correctly</li>
+      <li>Profile picture change via system file picker works</li>
+      <li>Communities / Accounts visibility dropdown (Everyone / Contacts / No one) works</li>
+      <li>Collectibles tab empty state renders correctly with "Add accounts" hint</li>
+      <li>Save changes flow works (user tap required — Qt bottom bar)</li>
+      <li class="skip">Drag-to-reorder within same section — not testable (only 1 community)</li>
+    </ul>
+  </section>
+
+  <!-- STATUS INDICATOR -->
+  <section>
+    <h2>3 · Status / Online Indicator</h2>
+    <ul class="checklist">
+      <li>Always online — switches correctly, green dot shown</li>
+      <li>Inactive — switches correctly, grey dot shown</li>
+      <li>Set status automatically — switches correctly, default restored</li>
+    </ul>
+  </section>
+
+  <!-- FINDINGS -->
+  <section>
+    <h2>4 · Bugs &amp; Issues Found</h2>
+    <div class="findings">
+
+      <div class="finding security">
+        <div class="icon">🔐</div>
+        <div class="body">
+          <div class="title">Seed phrase words exposed in accessibility tree before "Reveal" tap</div>
+          <div class="detail">All 12 words readable via <code>uiautomator dump</code> without any user interaction. Any app with accessibility permission can silently extract the seed phrase. → <a href="https://github.com/status-im/status-app/issues/20931">#20931</a></div>
+        </div>
+      </div>
+
+      <div class="finding bug">
+        <div class="icon">🐛</div>
+        <div class="body">
+          <div class="title">Bio field accepts input beyond 240-character limit</div>
+          <div class="detail">No hard cap — field shows 243/240 with red border and blocks save, but does not stop typing. User must manually trim. → <a href="https://github.com/status-im/status-app/issues/20932">#20932</a></div>
+        </div>
+      </div>
+
+      <div class="finding ux">
+        <div class="icon">⚠️</div>
+        <div class="body">
+          <div class="title">No confirmation when navigating away with unsaved changes</div>
+          <div class="detail">Back button exits Edit Profile silently. Changes are retained in memory but user is not informed they were not saved. → <a href="https://github.com/status-im/status-app/issues/20933">#20933</a></div>
+        </div>
+      </div>
+
+      <div class="finding bug">
+        <div class="icon">🐛</div>
+        <div class="body">
+          <div class="title">"Drag communities here" cross-section drag non-functional on Android</div>
+          <div class="detail">The label "Drag communities here to display in showcase" creates a false affordance. Dragging from Hidden → In showcase has no effect. Workaround: use the visibility dropdown. → <a href="https://github.com/status-im/status-app/issues/20934">#20934</a></div>
+        </div>
+      </div>
+
+      <div class="finding ux">
+        <div class="icon">⚠️</div>
+        <div class="body">
+          <div class="title">"Enable push notifications" modal cannot be dismissed by tapping outside</div>
+          <div class="detail">Standard Android bottom sheet dismiss (tap overlay) is ignored. Must use "Maybe later" or "Continue" buttons. → <a href="https://github.com/status-im/status-app/issues/20935">#20935</a></div>
+        </div>
+      </div>
+
+      <div class="finding bug">
+        <div class="icon">🐛</div>
+        <div class="body">
+          <div class="title">"Changes detected" bar clips text at left screen edge</div>
+          <div class="detail">The dirty-state bottom bar text is cut off on the left side. → <a href="https://github.com/status-im/status-app/issues/20927">#20927</a></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>Status 2.38.0-rc.1 Profile Testing · 2026-05-18</footer>
+</body>
+</html>
