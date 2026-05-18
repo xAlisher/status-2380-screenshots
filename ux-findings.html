@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status 2.38.0-rc.1 — UX Findings</title>
+<style>
+  :root {
+    --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b;
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
+  a { color: var(--accent); }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 2rem; }
+  header h1 { font-size: 1.6rem; margin-bottom: .4rem; }
+  header .meta { color: var(--muted); font-size: .9rem; display: flex; gap: 2rem; flex-wrap: wrap; }
+
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: .6rem 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .85rem; }
+  nav a { text-decoration: none; color: var(--muted); } nav a:hover { color: var(--text); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  /* Scorecard */
+  #scorecard { margin-bottom: 3rem; }
+  #scorecard h2 { font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+  .score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; }
+  .score-card .label { font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
+  .score-card .value { font-size: 1.5rem; font-weight: 700; }
+  .score-card.pass .value { color: var(--pass); }
+  .score-card.fail .value { color: var(--fail); }
+  .score-card.warn .value { color: var(--warn); }
+
+  /* Screen sections */
+  .screen { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; margin-bottom: 2.5rem; align-items: start; }
+  @media (max-width: 680px) { .screen { grid-template-columns: 1fr; } }
+  .screen img { width: 220px; border-radius: 12px; border: 1px solid var(--border); display: block; }
+  .screen img.wide { width: 220px; height: auto; object-fit: contain; }
+  .screen-info h2 { font-size: 1rem; margin-bottom: .75rem; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  th, td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+  th { background: var(--surface); color: var(--muted); width: 110px; font-weight: 600; }
+  td { background: #0f1a2e; }
+
+  .tag { display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .78rem; font-weight: 600; margin-right: .3rem; margin-bottom: .2rem; }
+  .tag.pass { background: #14532d; color: var(--pass); }
+  .tag.fail { background: #450a0a; color: #fca5a5; }
+  .tag.warn { background: #451a03; color: #fbbf24; }
+
+  h2.section { font-size: 1.2rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+  h3.finding { font-size: 1rem; margin-bottom: .75rem; color: var(--text); }
+
+  .area-header { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .75rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; font-size: .85rem; color: var(--muted); }
+  .area-header strong { color: var(--text); }
+  .badge { display: inline-block; padding: .15rem .55rem; border-radius: 4px; font-size: .78rem; font-weight: 600; margin-left: .4rem; }
+  .badge.android { background: #14532d; color: #86efac; }
+  .badge.desktop { background: #1e3a5f; color: #93c5fd; }
+
+  .multi-img { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .multi-img img { width: 105px; border-radius: 8px; border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Status UX Findings — Bug Review</h1>
+  <div class="meta">
+    <span>Build: <strong>2.38.0-rc.1-61-g61e695896</strong></span>
+    <span>Sessions: <strong>2026-05-12 &amp; 2026-05-18</strong></span>
+    <span>Platforms: <strong>Desktop (Linux) · Android (arm64)</strong></span>
+    <span>Total issues filed: <strong>54</strong></span>
+  </div>
+</header>
+
+<nav>
+  <a href="index.html">← All Reports</a>
+  <a href="#scorecard">Scorecard</a>
+  <a href="#wallet">Wallet</a>
+  <a href="#chat">Chat &amp; Messaging</a>
+  <a href="#communities">Communities</a>
+  <a href="#profile">Profile &amp; Settings</a>
+</nav>
+
+<main>
+
+<!-- SCORECARD -->
+<section id="scorecard">
+  <h2>Summary Scorecard</h2>
+  <div class="score-grid">
+    <div class="score-card fail"><div class="label">Total Issues Filed</div><div class="value">54</div></div>
+    <div class="score-card fail"><div class="label">Wallet</div><div class="value">20</div></div>
+    <div class="score-card fail"><div class="label">Chat &amp; Messaging</div><div class="value">18</div></div>
+    <div class="score-card fail"><div class="label">Communities</div><div class="value">6</div></div>
+    <div class="score-card warn"><div class="label">Profile &amp; Settings</div><div class="value">5</div></div>
+    <div class="score-card warn"><div class="label">Sessions</div><div class="value">3</div></div>
+  </div>
+</section>
+
+<!-- WALLET -->
+<h2 class="section" id="wallet">Wallet</h2>
+<div class="area-header">
+  <span><strong>20 issues</strong> · Send flow, assets, token picker, account management</span>
+  <span><span class="badge desktop">Desktop</span> 2026-05-18</span>
+</div>
+
+<h3 class="finding" id="w1">Ways to Buy — single provider shown as full-screen modal</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/wallet-ways-to-buy-tile.png" alt="Ways to buy tile">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/wallet-ways-to-buy-single-provider-modal.png" alt="Ways to buy modal">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20903">#20903</a></td></tr>
+      <tr><th>Finding</th><td>When only one provider is available, tapping "Ways to buy" opens a full-screen modal with a single list item. The extra navigation step adds no value — the single provider should open directly.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Unnecessary modal layer for one-option scenario</td></tr>
+      <tr><th>Suggestion</th><td>If exactly one provider is available, skip the picker and open the provider directly. Show the modal only when ≥2 providers are available.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w2">Send — max button disabled with no explanation</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/send-modal-fees-missing-button-disabled-no-feedback.png" alt="Send modal disabled fees">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20904">#20904</a></td></tr>
+      <tr><th>Finding</th><td>The "Max" button in the send flow is visually disabled (greyed out) with no tooltip or explanation. The fee row shows dashes instead of values. Users cannot tell if this is a loading state, insufficient balance, or a network error.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Blocked send action with no recovery guidance</td></tr>
+      <tr><th>Suggestion</th><td>Show a loading spinner while fees are fetching. If fees fail to load, show an inline error with a Retry button. Tooltip on disabled Max: "Fees not yet loaded" or "Insufficient balance for fees".</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w3">Send — amount field visually clipped</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/send-modal-amount-visually-clipped.png" alt="Send amount clipped">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20906">#20906</a></td></tr>
+      <tr><th>Finding</th><td>The amount input field clips the typed value — the leading digit is hidden by the left edge of the input container. The full amount is present but not visible without scrolling the field.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> User cannot verify the full amount they are sending</td></tr>
+      <tr><th>Suggestion</th><td>Increase horizontal padding in the amount field, or shrink the font size when the entered value exceeds the visible width (similar to iOS calculator auto-shrink pattern).</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w4">Sign &amp; Send — title block duplicates header, pushes details below fold</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/sign-send-modal-title-block-duplicates-header-pushes-details-below-fold.png" alt="Sign send title block">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20907">#20907</a></td></tr>
+      <tr><th>Finding</th><td>The "Sign &amp; Send" confirmation modal shows a large title block ("Sign &amp; Send" heading + network/account row) that repeats the same info as the modal header, consuming ~40% of visible screen height and pushing the fee/amount details below the fold.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Transaction amount not visible without scrolling on confirmation screen</td></tr>
+      <tr><th>Suggestion</th><td>Collapse the redundant title block. Show network + account inline with the header. Prioritise amount and fee breakdown above the fold.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w5">Custom fees modal — clipped content, no scroll hint, no close</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/sign-send-custom-fees-modal-clipped-no-close-no-scroll.png" alt="Custom fees modal clipped">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20908">#20908</a></td></tr>
+      <tr><th>Finding</th><td>The "Edit fees" modal clips its bottom content (max fee field cut off), shows no scroll indicator, and has no visible close/dismiss button. Users can get stuck in this modal on smaller screens.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> User cannot see or set max fee; may be trapped in modal</td></tr>
+      <tr><th>Suggestion</th><td>Add explicit close (×) button. Add scroll-hint gradient at bottom of clipped content. Ensure modal height is bounded so all fields are reachable.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w6">Token picker — search state resets on selection</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/send-token-dropdown-search-issue-1-before.png" alt="Token search before">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/send-token-dropdown-search-issue-2-open.png" alt="Token search open">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20910">#20910</a></td></tr>
+      <tr><th>Finding</th><td>After searching and selecting a token, reopening the token picker clears the search field and resets to the full list. The previously selected token is not highlighted or shown at top. Users who re-open the picker lose their search context.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> Repeated search friction when switching between tokens</td></tr>
+      <tr><th>Suggestion</th><td>Pin the currently-selected token at the top of the list. Persist the search query for the session or reset cleanly with the selection highlighted.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w7">Collectible send — opens blank modal</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/collectible-send-button-opens-blank-modal-detail.png" alt="Collectible detail send">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/collectible-send-button-opens-blank-modal-send.png" alt="Collectible blank send modal">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20918">#20918</a></td></tr>
+      <tr><th>Finding</th><td>Tapping "Send" from a collectible detail page opens a blank send modal — no collectible name, image, or pre-filled recipient. The modal appears completely empty.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Cannot send collectibles from detail view; send flow broken</td></tr>
+      <tr><th>Suggestion</th><td>Pre-populate the send modal with the collectible context (image thumbnail, name, token ID, chain). Treat as a regression test case for collectible send.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="w8">Wallet tab indicator too close to content</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/wallet-tab-indicator-too-close-to-content-assets.png" alt="Tab indicator assets">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/wallet-tab-indicator-too-close-to-content-collectibles.png" alt="Tab indicator collectibles">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20905">#20905</a></td></tr>
+      <tr><th>Finding</th><td>The active tab underline indicator on the wallet (Assets / Collectibles / History) sits flush against the first row of list content with no gap. On both tabs, the indicator visually bleeds into the content area.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> Minor visual polish issue, affects perceived quality</td></tr>
+      <tr><th>Suggestion</th><td>Add 4–8dp bottom padding below the tab bar before the content list begins.</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- CHAT & MESSAGING -->
+<h2 class="section" id="chat">Chat &amp; Messaging</h2>
+<div class="area-header">
+  <span><strong>18 issues</strong> · Chat input, pinned messages, search, contact flow, activity pane</span>
+  <span><span class="badge desktop">Desktop</span> 2026-05-12 &amp; 2026-05-18</span>
+</div>
+
+<h3 class="finding" id="c1">Send and scroll-to-bottom icons are identical</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-send-scroll-identical-icons-1.png" alt="Send scroll icons 1">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-send-scroll-identical-icons-2.png" alt="Send scroll icons 2">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The "Send message" button and "Scroll to latest" floating button use visually identical chevron-up icons. Users tapping the wrong button may send an incomplete message or miss new messages.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Critical ambiguity — destructive if send is triggered unintentionally</td></tr>
+      <tr><th>Suggestion</th><td>Use a paper-plane or arrow-right icon for Send. Reserve chevron-up/down exclusively for scroll actions.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c2">Context menu missing Copy action</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-context-menu-missing-copy-action.png" alt="Context menu no copy">
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>Long-pressing a chat message shows a context menu without a "Copy" option. Copy is a fundamental expectation in all chat products; its absence forces users to select text manually.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Core interaction missing; high user-reported frustration expected</td></tr>
+      <tr><th>Suggestion</th><td>Add "Copy text" as the first item in the message context menu.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c3">Pinned message banner is not interactive</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-pinned-banner-not-interactive.png" alt="Pinned banner not interactive">
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The pinned-message banner at the top of a channel is shown but tapping it does nothing — it does not scroll to the pinned message or open the pinned messages panel. The banner sets an expectation it does not fulfill.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Dead interactive element; misleads user expectation</td></tr>
+      <tr><th>Suggestion</th><td>Tapping the banner should scroll the view to the pinned message. A secondary tap or swipe could open the full pinned messages list.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c4">Activity pane expands the left column instead of overlaying</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/messaging-activity-pane-expands-left-column-1.png" alt="Activity pane expands 1">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/messaging-activity-pane-expands-left-column-2.png" alt="Activity pane expands 2">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>Opening the notification/activity pane pushes the left navigation column wider instead of overlaying. This compresses the channel list and chat view simultaneously, causing layout reflow visible to the user.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> Disorienting layout shift; reduces screen real estate for primary content</td></tr>
+      <tr><th>Suggestion</th><td>Render the activity pane as a floating overlay anchored to the right, not as a flexbox sibling of the nav rail.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c5">Cross-chat search results have no navigation</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-search-cross-chat-no-navigation-1.png" alt="Cross chat search 1">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-search-cross-chat-no-navigation-2.png" alt="Cross chat search 2">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The cross-chat search returns results from multiple channels, but tapping a result does not navigate to the message in context. Results are listed without a way to jump to the message.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Search results are decorative — core navigation intent is blocked</td></tr>
+      <tr><th>Suggestion</th><td>Tapping a search result should navigate to the channel and scroll-highlight the matching message.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c6">Contact list not fetched — empty state with no guidance</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/chat-contact-list-never-fetched.png" alt="Contact list never fetched">
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The contacts list shows empty with no explanation of whether it is loading, failed, or genuinely empty. No "Add contact" prompt or search suggestion is shown to the new user.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Dead end for new users; they have no path to finding or adding contacts</td></tr>
+      <tr><th>Suggestion</th><td>Show a distinct loading state while fetching. If empty, show an actionable empty state: "No contacts yet — share your profile link or search by ENS / Status ID."</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="c7">Share profile icon opens preview instead of QR code</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/messaging-share-profile-opens-preview-not-qr-1.png" alt="Share profile 1">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/messaging-share-profile-opens-preview-not-qr-2.png" alt="Share profile 2">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>Tapping the share/QR icon on a contact's profile opens a web-style profile preview page rather than a QR code for scanning. The icon communicates QR scanning; the result is a different action.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> Icon-action mismatch; adds friction for in-person contact sharing</td></tr>
+      <tr><th>Suggestion</th><td>Use a distinct icon for "View profile" vs "Show QR code". Default the share icon to QR display; offer a secondary link to the profile preview.</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- COMMUNITIES -->
+<h2 class="section" id="communities">Communities</h2>
+<div class="area-header">
+  <span><strong>6 issues</strong> · Share URL, discovery, empty state, Android-specific</span>
+  <span><span class="badge desktop">Desktop</span> <span class="badge android">Android</span> 2026-05-18</span>
+</div>
+
+<h3 class="finding" id="com1">Share dialog shows user profile URL instead of community URL</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/community-share-wrong-url-desktop-context.png" alt="Share wrong URL context">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/community-share-wrong-url-desktop-annotated.png" alt="Share wrong URL annotated">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20923">#20923</a></td></tr>
+      <tr><th>Finding</th><td>Opening the Share dialog from a community page shows the current user's profile URL, not the community's URL. Anyone who shares this link sends their own profile to others instead of the community.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Sharing is broken — community growth path uses wrong link</td></tr>
+      <tr><th>Suggestion</th><td>When the share dialog is opened from a community context (community header, community settings), populate the link with <code>status.app/c/{communityKey}</code> not <code>status.app/u/{profileKey}</code>.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="com2">Communities directory shows nothing on first open — no loading state</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/join-comm-ui-small.png" alt="Empty community directory">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20924">#20924</a> <span class="badge android">Android</span></td></tr>
+      <tr><th>Finding</th><td>On first open, the Communities directory is completely empty with no loading indicator, no error message, and no explanation that communities are being fetched from the network. A new user who sees this is likely to assume the feature is broken and not return.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Immediate churn risk for new users exploring communities</td></tr>
+      <tr><th>Suggestion</th><td>Minimum: show a "Fetching communities…" message with a spinner. Better: embed a small set of curated/featured communities in the build so the screen is never empty on first launch.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="com3">Discover Communities search returns no results for name queries</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/communities-search-clear-bug-small.png" alt="Communities search no results">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20926">#20926</a> <span class="badge android">Android</span></td></tr>
+      <tr><th>Finding</th><td>Typing any community name in Discover Communities always shows "No communities found." The search fires on text change against a local cache that is empty on first launch. There is no submit button, no debounce-then-network-search, and no indication that the search requires the cache to be populated first.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Community discovery by name is non-functional; only community key paste works</td></tr>
+      <tr><th>Suggestion</th><td>Fall back to a network search when the local cache returns no results. Add a Submit/Search button. Show hint text: "Search works after communities load — paste a community link to join immediately."</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="com4">App crashes when tapping community name header in guest mode</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/community-scroll-arrow-touches-input-border.png" alt="Community scroll arrow">
+  <div class="screen-info">
+    <table>
+      <tr><th>Issue</th><td><a href="https://github.com/status-im/status-app/issues/20925">#20925</a> <span class="badge android">Android</span></td></tr>
+      <tr><th>Finding</th><td>Tapping the community name/header banner in guest mode (not a member) crashes the app to the Android home screen. Reproducible on second tap after cold launch (confirmed 2×). No crash dialog or error shown.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Hard crash; guest community browsing is unreliable</td></tr>
+      <tr><th>Suggestion</th><td>Add a null-check or guard in the community header tap handler for the case where the user is not a member. File for crash symbolication — this is a signal of a missing membership state guard in the navigation stack.</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<h2 class="section" id="profile">Profile &amp; Settings</h2>
+<div class="area-header">
+  <span><strong>5 issues</strong> · QR modal, copy link, profile sharing</span>
+  <span><span class="badge desktop">Desktop</span> 2026-05-12</span>
+</div>
+
+<h3 class="finding" id="p1">Profile QR modal content cut at bottom</h3>
+<div class="screen">
+  <div class="multi-img">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-qr-modal-content-cut-at-bottom-1.png" alt="QR modal cut 1">
+    <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-qr-modal-content-cut-at-bottom-2.png" alt="QR modal cut 2">
+  </div>
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The profile QR code modal clips its bottom content — the share link and copy-link buttons are partially visible or fully cut off without a scroll affordance. On some window sizes the QR code itself is partially obscured.</td></tr>
+      <tr><th>Impact</th><td><span class="tag fail">✗</span> Copy-link CTA inaccessible; profile sharing is broken at small window heights</td></tr>
+      <tr><th>Suggestion</th><td>Make the modal scrollable, or constrain the QR code size so that all action buttons are always visible above the fold. Add a minimum-height media query or dynamic sizing.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="p2">Copy profile link shows no feedback</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-copy-link-no-feedback.png" alt="Copy link no feedback">
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>Tapping "Copy link" on the profile page copies to clipboard but shows no visual confirmation — no toast, no icon change, no checkmark. Users cannot tell if the action succeeded.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> No confirmation of clipboard write; users may tap multiple times</td></tr>
+      <tr><th>Suggestion</th><td>Show a brief "Copied!" toast or animate the copy icon to a checkmark for 1.5s after the clipboard write succeeds.</td></tr>
+    </table>
+  </div>
+</div>
+
+<h3 class="finding" id="p3">Profile QR avatar has no border or branding</h3>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/profile-qr-avatar-no-border-no-branding.png" alt="Profile QR no branding">
+  <div class="screen-info">
+    <table>
+      <tr><th>Finding</th><td>The profile QR code shows a raw QR matrix with no Status logo center-inset, no border/padding around the code, and no context label. Compared to competitor wallets (MetaMask, Rainbow), this is the least polished QR presentation.</td></tr>
+      <tr><th>Impact</th><td><span class="tag warn">⚠</span> Perceived quality gap; missed branding opportunity on a highly-shared screen</td></tr>
+      <tr><th>Suggestion</th><td>Add the Status logo (or user avatar) center-inset into the QR code. Add 12dp white padding around the QR matrix. Add "Scan to add me on Status" label below.</td></tr>
+    </table>
+  </div>
+</div>
+
+<footer style="margin-top:3rem;padding:1.5rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;text-align:center;">
+  Status 2.38.0-rc.1 UX Findings · 2026-05-12 &amp; 2026-05-18 ·
+  <a href="https://github.com/xAlisher/status-2380-screenshots">screenshots repo</a> ·
+  <a href="https://github.com/xAlisher/android-skills">android-skills</a>
+</footer>
+
+</main>
+</body>
+</html>
