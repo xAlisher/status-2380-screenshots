@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status Android — Recovery Phrase Backup UX Review</title>
+<style>
+  :root {
+    --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b;
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
+  a { color: var(--accent); }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 2rem; }
+  header h1 { font-size: 1.6rem; margin-bottom: .4rem; }
+  header .meta { color: var(--muted); font-size: .9rem; display: flex; gap: 2rem; flex-wrap: wrap; }
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: .6rem 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .85rem; }
+  nav a { text-decoration: none; color: var(--muted); } nav a:hover { color: var(--text); }
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .75rem; margin-bottom: 2rem; }
+  .score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; }
+  .score-card .label { font-size: .8rem; color: var(--muted); margin-bottom: .3rem; }
+  .score-card .value { font-size: 1.5rem; font-weight: 700; }
+  .score-card.pass .value { color: var(--pass); }
+  .score-card.fail .value { color: var(--fail); }
+  .score-card.warn .value { color: var(--warn); }
+  .screen { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; margin-bottom: 3rem; align-items: start; }
+  @media (max-width: 680px) { .screen { grid-template-columns: 1fr; } }
+  .screen img { width: 200px; border-radius: 12px; border: 1px solid var(--border); display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+  th, td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: left; vertical-align: top; }
+  th { background: var(--surface); color: var(--muted); width: 130px; font-weight: 600; }
+  td { background: #0f1a2e; }
+  .tag { display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .78rem; font-weight: 600; margin-right: .3rem; margin-bottom: .2rem; }
+  .tag.pass { background: #14532d; color: var(--pass); }
+  .tag.fail { background: #450a0a; color: #fca5a5; }
+  .tag.warn { background: #451a03; color: #fbbf24; }
+  h2.section { font-size: 1.2rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+  .verdict { background: #14532d; border: 1px solid #166534; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 2rem; color: #dcfce7; font-size: .95rem; }
+  .verdict strong { color: #86efac; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Recovery Phrase Backup — UX Review</h1>
+  <div class="meta">
+    <span>Build: <strong>2.38.0-rc.1-61-g61e695896</strong></span>
+    <span>Device: <strong>Samsung RF8RA0M127K (arm64)</strong></span>
+    <span>Date: <strong>2026-05-18</strong></span>
+    <span>Flow: <strong>Post-onboarding backup, existing profile</strong></span>
+  </div>
+</header>
+<nav>
+  <a href="/">← All reports</a>
+  <a href="#verdict">Verdict</a>
+  <a href="#screen-01">01 Banner</a>
+  <a href="#screen-02">02 Show Phrase</a>
+  <a href="#screen-03">03 Confirm Words</a>
+  <a href="#screen-04">04 Validated</a>
+  <a href="#screen-05">05 Keep or Delete</a>
+  <a href="#screen-06">06 Success</a>
+</nav>
+<main>
+
+<div class="score-grid">
+  <div class="score-card pass"><div class="label">Criteria Pass</div><div class="value">8</div></div>
+  <div class="score-card fail"><div class="label">Criteria Fail</div><div class="value">3</div></div>
+  <div class="score-card warn"><div class="label">Screens</div><div class="value">6</div></div>
+  <div class="score-card pass"><div class="label">Flow Complete</div><div class="value">✓</div></div>
+</div>
+
+<div class="verdict" id="verdict">
+  <strong>Overall: Good flow with one persistent bug.</strong> The recovery phrase backup is well-structured — phrase is blurred by default, word verification is random and validated in real time, and the final choice (keep vs. delete from app) is safety-first. One clear bug: the red "Secure your recovery phrase" banner persists throughout the entire flow and doesn't clear until Done is tapped on the final screen.
+</div>
+
+<h2 class="section" id="screen-01">01 — Home: Backup Banner</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/01-home-banner.png" alt="Home with backup banner">
+  <table>
+    <tr><th>Element</th><td>Red persistent banner — "Secure your recovery phrase / Back up now"</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Banner is prominent and hard to dismiss accidentally (X requires deliberate tap)<br>
+      <span class="tag pass">✓</span> "Back up now" CTA is direct and actionable<br>
+      <span class="tag warn">⚠</span> Red colour = error/danger signal — appropriate for urgency but may feel alarming rather than guiding<br>
+      <span class="tag warn">⚠</span> No indication of how long the flow takes — users may defer thinking it's complex
+    </td></tr>
+    <tr><th>Suggestions</th><td>Add "Takes 2 minutes" next to the CTA to reduce deferral.</td></tr>
+  </table>
+</div>
+
+<h2 class="section" id="screen-02">02 — Show Recovery Phrase</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/02-show-phrase.png" alt="Show recovery phrase screen">
+  <table>
+    <tr><th>Element</th><td>12 words blurred by default; "Reveal recovery phrase" button; warnings; "I've backed up phrase" (disabled until reveal)</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Words blurred by default — prevents shoulder-surfing<br>
+      <span class="tag pass">✓</span> "I've backed up phrase" disabled until user actively reveals — ensures deliberate action<br>
+      <span class="tag pass">✓</span> Two clear warnings: "never share" + "write it down" — plain language<br>
+      <span class="tag fail">✗</span> Red banner still showing at top — user is already in the backup flow, the nudge is redundant and confusing<br>
+      <span class="tag warn">⚠</span> No screenshot-blocking — sensitive screen should set FLAG_SECURE to prevent screen capture by other apps
+    </td></tr>
+    <tr><th>Suggestions</th><td>
+      Dismiss/hide the "Secure your recovery phrase" banner once the user has entered this flow.<br>
+      Add FLAG_SECURE (WindowManager) to prevent OS-level screenshot of the revealed phrase.
+    </td></tr>
+  </table>
+</div>
+
+<h2 class="section" id="screen-03">03 — Confirm Recovery Phrase</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/03-confirm-words.png" alt="Confirm recovery phrase">
+  <table>
+    <tr><th>Element</th><td>4 random word positions to fill in (1, 8, 10, 11); keyboard with BIP39 autocomplete suggestions</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Random word positions per session — prevents rote memorisation without understanding<br>
+      <span class="tag pass">✓</span> BIP39 word suggestions shown in keyboard bar — reduces typo errors<br>
+      <span class="tag fail">✗</span> Red banner still showing — user has been in the flow for 2 screens already<br>
+      <span class="tag warn">⚠</span> 4 of 12 words verified — industry standard, but sophisticated users may note this doesn't prove full backup
+    </td></tr>
+    <tr><th>Suggestions</th><td>Consider confirming 6 words for stronger verification signal.</td></tr>
+  </table>
+</div>
+
+<h2 class="section" id="screen-04">04 — Words Validated</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/04-words-validated.png" alt="Words validated with green checkmarks">
+  <table>
+    <tr><th>Element</th><td>All 4 fields showing green checkmarks; Continue enabled</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Real-time per-field validation with green checkmarks — clear feedback<br>
+      <span class="tag pass">✓</span> Continue only enabled when all fields are correct<br>
+      <span class="tag warn">⚠</span> Autocomplete suggestions don't update to match the correct word — shows unrelated words ("Escort, eskort, Escorta") while field is marked correct; minor visual noise
+    </td></tr>
+  </table>
+</div>
+
+<h2 class="section" id="screen-05">05 — Keep or Delete Phrase</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/05-keep-or-delete.png" alt="Keep or delete recovery phrase screen">
+  <table>
+    <tr><th>Element</th><td>Option to permanently remove phrase from app; checkbox (opt-in to delete); Done button</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Destructive action (delete) is opt-in behind a checkbox — default is safe (keep)<br>
+      <span class="tag pass">✓</span> Clear consequence stated: "you will not be able to view it again"<br>
+      <span class="tag warn">⚠</span> No explanation of <em>why</em> a user would want to delete it — the tradeoff between security (remove attack surface) vs. convenience (view again later) isn't explained
+    </td></tr>
+    <tr><th>Suggestions</th><td>Add a one-line tooltip: "Removing it from the app reduces risk if your phone is compromised."</td></tr>
+  </table>
+</div>
+
+<h2 class="section" id="screen-06">06 — Success</h2>
+<div class="screen">
+  <img src="https://raw.githubusercontent.com/xAlisher/status-2380-screenshots/main/backup/06-home-success.png" alt="Home after backup complete">
+  <table>
+    <tr><th>Element</th><td>Red banner gone; green toast — "You backed up your recovery phrase. Access it in Settings"</td></tr>
+    <tr><th>Findings</th><td>
+      <span class="tag pass">✓</span> Red banner clears immediately on flow completion — clean resolution<br>
+      <span class="tag pass">✓</span> Success toast tells user where to access the phrase again (Settings)<br>
+      <span class="tag warn">⚠</span> Toast auto-dismisses — users who miss it don't know where Settings access lives
+    </td></tr>
+    <tr><th>Suggestions</th><td>Make the toast tappable (deep-link to Settings → Recovery phrase).</td></tr>
+  </table>
+</div>
+
+<footer style="margin-top:3rem;padding:1.5rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;text-align:center;">
+  Status Android Recovery Phrase Backup UX · Build 2.38.0-rc.1-61 · 2026-05-18 ·
+  <a href="https://github.com/xAlisher/status-2380-screenshots">screenshots repo</a>
+</footer>
+</main>
+</body>
+</html>
